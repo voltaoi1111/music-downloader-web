@@ -3,59 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cloud MP3 Downloader</title>
+    <title>Volt Music - Wynk Style</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-900 text-white min-h-screen flex items-center justify-center p-4">
-    <div class="max-w-md w-full bg-gray-800 p-8 rounded-2xl shadow-2xl border border-gray-700">
-        <h1 class="text-3xl font-bold mb-2 text-center text-blue-400">🎵 MP3 Downloader</h1>
-        <p class="text-gray-400 text-center text-sm mb-8">Search & download music from YouTube</p>
+<body class="bg-[#0b0b0b] text-white font-sans overflow-hidden h-screen flex flex-col">
+
+    <nav class="h-16 flex items-center justify-between px-6 bg-[#121212] border-b border-gray-800 shrink-0">
+        <div class="flex items-center gap-2">
+            <div class="bg-blue-600 p-2 rounded-lg"><i class="fas fa-bolt text-white"></i></div>
+            <span class="text-xl font-black tracking-tighter italic text-blue-500 uppercase">Volt Music</span>
+        </div>
         
-        <div class="space-y-4">
-            <input id="songQuery" type="text" placeholder="Song name or YouTube link..." 
-                class="w-full p-4 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
-            
-            <button onclick="startDownload()" id="dlBtn"
-                class="w-full bg-blue-600 hover:bg-blue-500 p-4 rounded-lg font-bold text-lg transition transform active:scale-95 flex items-center justify-center gap-2">
-                <span>Download MP3</span>
+        <div class="flex-1 max-w-xl mx-8">
+            <div class="relative group">
+                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-blue-500 transition"></i>
+                <input id="songInput" type="text" placeholder="Search for songs, artists, or links..." 
+                    class="w-full bg-[#1e1e1e] border border-transparent focus:border-blue-600 focus:bg-[#252525] rounded-full py-2.5 pl-12 pr-4 outline-none transition duration-300">
+            </div>
+        </div>
+
+        <div class="flex gap-4">
+            <button onclick="handleDownload()" class="bg-blue-600 hover:bg-blue-500 px-6 py-2 rounded-full font-bold text-sm transition shadow-lg shadow-blue-900/20 active:scale-95">
+                Download Now
             </button>
         </div>
+    </nav>
 
-        <div id="status" class="mt-8 text-center hidden">
-            <div class="animate-spin inline-block w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full mb-3"></div>
-            <p class="text-blue-300 font-medium animate-pulse">Processing on Hugging Face...</p>
-            <p class="text-xs text-gray-500 mt-2 italic">Conversion may take 30-60 seconds</p>
-        </div>
+    <div class="flex flex-1 overflow-hidden">
+        <aside class="w-64 bg-[#121212] p-4 hidden md:flex flex-col gap-6 border-r border-gray-800">
+            <div class="space-y-1">
+                <p class="text-xs font-bold text-gray-500 px-4 mb-2 uppercase tracking-widest">Discover</p>
+                <div class="flex items-center gap-3 px-4 py-3 bg-[#1e1e1e] rounded-xl text-blue-400 cursor-pointer">
+                    <i class="fas fa-home"></i> <span class="font-bold">Home</span>
+                </div>
+                <div class="flex items-center gap-3 px-4 py-3 hover:bg-[#1e1e1e] rounded-xl text-gray-400 hover:text-white transition cursor-pointer">
+                    <i class="fas fa-compass"></i> <span>Browse</span>
+                </div>
+            </div>
+            
+            <div class="space-y-1">
+                <p class="text-xs font-bold text-gray-500 px-4 mb-2 uppercase tracking-widest">Your Library</p>
+                <div class="flex items-center gap-3 px-4 py-3 hover:bg-[#1e1e1e] rounded-xl text-gray-400 hover:text-white transition cursor-pointer">
+                    <i class="fas fa-history"></i> <span>Recent Downloads</span>
+                </div>
+                <div class="flex items-center gap-3 px-4 py-3 hover:bg-[#1e1e1e] rounded-xl text-gray-400 hover:text-white transition cursor-pointer">
+                    <i class="fas fa-heart"></i> <span>Liked Songs</span>
+                </div>
+            </div>
+        </aside>
+
+        <main class="flex-1 overflow-y-auto bg-gradient-to-b from-[#121212] to-[#0b0b0b] p-8">
+            <h2 class="text-2xl font-bold mb-6">Trending Near You</h2>
+            
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
+                <div class="bg-[#181818] p-4 rounded-2xl hover:bg-[#222] transition cursor-pointer group">
+                    <div class="relative aspect-square rounded-xl bg-gray-700 mb-4 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                        <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                            <i class="fas fa-play text-white text-3xl"></i>
+                        </div>
+                    </div>
+                    <p class="font-bold truncate">New Hits 2026</p>
+                    <p class="text-sm text-gray-500">Curated for you</p>
+                </div>
+                </div>
+
+            <div id="loadingArea" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center">
+                <div class="text-center p-8 bg-[#1e1e1e] rounded-3xl border border-gray-800 shadow-2xl">
+                    <div class="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
+                    <p class="text-xl font-bold text-white mb-2">Wynk-ing your song...</p>
+                    <p class="text-gray-500 text-sm">Hugging Face is converting your MP3</p>
+                </div>
+            </div>
+        </main>
     </div>
 
+    <footer class="h-24 bg-[#181818] border-t border-gray-800 px-6 flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-4 w-1/3">
+            <div class="w-14 h-14 bg-gray-700 rounded-lg overflow-hidden shadow-lg">
+                <img id="activeArt" src="https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=100" class="w-full h-full object-cover">
+            </div>
+            <div class="hidden sm:block">
+                <p id="activeTitle" class="font-bold text-sm">Waiting for search...</p>
+                <p class="text-xs text-gray-500">Volt Music Player</p>
+            </div>
+        </div>
+
+        <div class="flex flex-col items-center gap-2 w-1/3">
+            <div class="flex items-center gap-6 text-gray-400">
+                <i class="fas fa-random hover:text-blue-500 cursor-pointer"></i>
+                <i class="fas fa-step-backward hover:text-white cursor-pointer"></i>
+                <div class="bg-white text-black w-10 h-10 rounded-full flex items-center justify-center cursor-pointer hover:scale-110 transition">
+                    <i class="fas fa-play ml-1"></i>
+                </div>
+                <i class="fas fa-step-forward hover:text-white cursor-pointer"></i>
+                <i class="fas fa-redo hover:text-blue-500 cursor-pointer"></i>
+            </div>
+            <div class="w-full max-w-md h-1 bg-gray-700 rounded-full overflow-hidden">
+                <div class="h-full bg-blue-500 w-1/3"></div>
+            </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-4 w-1/3 text-gray-400">
+            <i class="fas fa-list-ul hover:text-white cursor-pointer"></i>
+            <div class="flex items-center gap-2 w-24">
+                <i class="fas fa-volume-up text-sm"></i>
+                <div class="h-1 bg-gray-700 flex-1 rounded-full"><div class="h-full bg-blue-500 w-3/4"></div></div>
+            </div>
+        </div>
+    </footer>
+
     <script>
-        function startDownload() {
-            const query = document.getElementById('songQuery').value.trim();
-            const status = document.getElementById('status');
-            const btn = document.getElementById('dlBtn');
+        function handleDownload() {
+            const query = document.getElementById('songInput').value;
+            const loading = document.getElementById('loadingArea');
+            const titleDisplay = document.getElementById('activeTitle');
 
-            if (!query) {
-                alert("❌ Please enter a song name first!");
-                return;
-            }
+            if (!query) return alert("Type a song name first!");
 
-            // Your Direct Hugging Face URL
-            const hfBackendUrl = `https://volt333221-volt-space.hf.space/download?query=${encodeURIComponent(query)}`;
+            // Your Backend URL
+            const apiUrl = `https://volt333221-volt-space.hf.space/download?query=${encodeURIComponent(query)}`;
 
-            // UI Feedback
-            status.classList.remove('hidden');
-            btn.disabled = true;
-            btn.classList.add('opacity-50', 'cursor-not-allowed');
+            loading.classList.remove('hidden');
+            titleDisplay.innerText = "Downloading: " + query;
 
-            // Start the download by redirecting the browser
-            window.location.href = hfBackendUrl;
-
-            // Optional: Hide loader after 20 seconds as user will be on the download screen
             setTimeout(() => {
-                status.classList.add('hidden');
-                btn.disabled = false;
-                btn.classList.remove('opacity-50', 'cursor-not-allowed');
-            }, 20000);
+                window.location.href = apiUrl;
+                
+                setTimeout(() => {
+                    loading.classList.add('hidden');
+                }, 8000);
+            }, 500);
         }
     </script>
 </body>
